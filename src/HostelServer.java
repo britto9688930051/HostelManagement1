@@ -12,7 +12,7 @@ public class HostelServer {
     private static final DatabaseManager dbManager = new DatabaseManager();
 
     public static Map<String, String> loadEnv() {
-        Map<String, String> env = new HashMap<>();
+        Map<String, String> env = new HashMap<>(System.getenv());
         File f = new File(".env");
         if (!f.exists()) f = new File("../.env");
         if (f.exists()) {
