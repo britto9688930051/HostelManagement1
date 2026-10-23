@@ -1,0 +1,4 @@
+*.class
+.env
+_env
+hostel.db

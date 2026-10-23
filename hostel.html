@@ -1,0 +1,2293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Register — Hostel Management</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zilla+Slab:wght@400;500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cover:#1F2A44;
+    --cover-2:#28365a;
+    --page:#EDE6D6;
+    --page-2:#E4DBC6;
+    --ink:#2B2B2B;
+    --ink-soft:#6b6255;
+    --brass:#B8863B;
+    --brass-dark:#8f6a2c;
+    --red:#A23E2D;
+    --green:#4f6b4f;
+    --rule:rgba(43,43,43,0.14);
+    --shadow: 0 10px 30px rgba(31,42,68,0.18);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background: var(--cover);
+    background-image: linear-gradient(160deg, var(--cover) 0%, var(--cover-2) 60%, var(--cover) 100%);
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+    min-height:100vh;
+  }
+  .app{
+    display:flex;
+    max-width:1400px;
+    margin:0 auto;
+    min-height:100vh;
+  }
+  .spine{
+    width:230px;
+    flex-shrink:0;
+    background: var(--cover);
+    padding:28px 0;
+    display:flex;
+    flex-direction:column;
+    position:relative;
+  }
+  .spine::after{
+    content:"";
+    position:absolute;
+    right:0; top:0; bottom:0;
+    width:6px;
+    background:linear-gradient(90deg, rgba(184,134,59,0.5), transparent);
+  }
+  .brand{
+    padding:0 24px 26px 24px;
+    border-bottom:1px solid rgba(237,230,214,0.15);
+    margin-bottom:10px;
+  }
+  .brand-mark{
+    font-family:'Zilla Slab',serif;
+    font-weight:700;
+    font-size:15px;
+    letter-spacing:0.14em;
+    color:var(--brass);
+    text-transform:uppercase;
+  }
+  .brand-title{
+    font-family:'Zilla Slab',serif;
+    font-weight:600;
+    font-size:22px;
+    color:#EDE6D6;
+    margin-top:6px;
+    line-height:1.2;
+  }
+  .brand-sub{
+    font-size:11px;
+    color:rgba(237,230,214,0.55);
+    margin-top:4px;
+    font-family:'IBM Plex Mono',monospace;
+  }
+  nav.tabs{
+    display:flex;
+    flex-direction:column;
+    margin-top:8px;
+  }
+  .tab{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:13px 24px;
+    color:rgba(237,230,214,0.68);
+    font-size:14px;
+    font-weight:500;
+    cursor:pointer;
+    border-left:3px solid transparent;
+    transition:all .15s ease;
+    user-select:none;
+  }
+  .tab .num{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:rgba(184,134,59,0.7);
+    width:18px;
+  }
+  .tab:hover{ background:rgba(237,230,214,0.05); color:#EDE6D6; }
+  .tab.active{
+    background:rgba(237,230,214,0.08);
+    border-left-color:var(--brass);
+    color:#fff;
+  }
+  .tab.active .num{ color:var(--brass); }
+  .role-switch{
+    margin-top:auto;
+    padding:18px 24px 0 24px;
+    border-top:1px solid rgba(237,230,214,0.15);
+  }
+  .role-switch label{
+    display:block;
+    font-size:10px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:rgba(237,230,214,0.45);
+    margin-bottom:8px;
+    font-family:'IBM Plex Mono',monospace;
+  }
+  .role-pills{ display:flex; gap:6px; flex-wrap:wrap; }
+  .role-pill{
+    font-size:11.5px;
+    padding:6px 10px;
+    border-radius:20px;
+    border:1px solid rgba(237,230,214,0.25);
+    color:rgba(237,230,214,0.75);
+    cursor:pointer;
+    background:transparent;
+    font-family:'Inter',sans-serif;
+  }
+  .role-pill.active{
+    background:var(--brass);
+    border-color:var(--brass);
+    color:#1F2A44;
+    font-weight:600;
+  }
+
+  .page{
+    flex:1;
+    background:
+      linear-gradient(var(--page-2) 1px, transparent 1px);
+    background-size: 100% 40px;
+    background-color:var(--page);
+    padding:40px 48px 60px 48px;
+    position:relative;
+    box-shadow: inset 8px 0 24px -12px rgba(0,0,0,0.15);
+  }
+  .page::before{
+    content:"";
+    position:absolute;
+    left:78px; top:0; bottom:0;
+    width:1px;
+    background:rgba(162,62,45,0.18);
+  }
+  .page-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    margin-bottom:28px;
+    padding-bottom:16px;
+    border-bottom:2px solid var(--ink);
+  }
+  .page-eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--brass-dark);
+    margin-bottom:6px;
+  }
+  h1{
+    font-family:'Zilla Slab',serif;
+    font-size:34px;
+    font-weight:700;
+    margin:0;
+    color:var(--ink);
+  }
+  .today{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+    text-align:right;
+  }
+  .view{ display:none; animation:fade .25s ease; }
+  .view.active{ display:block; }
+  @keyframes fade{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:none;} }
+
+  .stat-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:18px;
+    margin-bottom:34px;
+  }
+  .stat-card{
+    background:#fff;
+    border:1px solid var(--rule);
+    border-radius:4px;
+    padding:18px 20px;
+    box-shadow: var(--shadow);
+    position:relative;
+    overflow:hidden;
+  }
+  .stat-card::before{
+    content:"";
+    position:absolute; left:0; top:0; bottom:0; width:4px;
+    background:var(--brass);
+  }
+  .stat-num{
+    font-family:'Zilla Slab',serif;
+    font-size:32px;
+    font-weight:700;
+    color:var(--ink);
+  }
+  .stat-label{
+    font-size:12px;
+    color:var(--ink-soft);
+    margin-top:2px;
+  }
+  .stat-card.alert::before{ background:var(--red); }
+  .stat-card.good::before{ background:var(--green); }
+
+  .panel{
+    background:rgba(255,255,255,0.55);
+    border:1px solid var(--rule);
+    border-radius:4px;
+    padding:22px 24px;
+    margin-bottom:24px;
+  }
+  .panel h2{
+    font-family:'Zilla Slab',serif;
+    font-size:18px;
+    margin:0 0 14px 0;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .panel h2 .dot{ width:7px; height:7px; border-radius:50%; background:var(--brass); display:inline-block; }
+
+  table.ledger{ width:100%; border-collapse:collapse; }
+  table.ledger th{
+    text-align:left;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--ink-soft);
+    padding:8px 10px;
+    border-bottom:1.5px solid var(--ink);
+  }
+  table.ledger td{
+    padding:11px 10px;
+    border-bottom:1px solid var(--rule);
+    font-size:13.5px;
+    vertical-align:middle;
+  }
+  table.ledger tr:hover td{ background:rgba(184,134,59,0.06); }
+
+  .stamp{
+    display:inline-block;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    font-weight:700;
+    letter-spacing:0.06em;
+    padding:3px 9px;
+    border-radius:3px;
+    border:1.5px solid currentColor;
+    transform:rotate(-3deg);
+  }
+  .stamp.in{ color:var(--green); }
+  .stamp.out{ color:var(--red); }
+  .stamp.pending{ color:var(--brass-dark); }
+  .stamp.present{ color:var(--green); }
+  .stamp.absent{ color:var(--red); }
+  .stamp.resolved{ color:var(--green); }
+  .stamp.open{ color:var(--red); }
+  .stamp.progress{ color:var(--brass-dark); }
+
+  .form-row{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+    align-items:flex-end;
+    margin-bottom:16px;
+  }
+  .field{ display:flex; flex-direction:column; gap:5px; flex:1; min-width:150px; }
+  .field label{
+    font-size:11px;
+    color:var(--ink-soft);
+    font-family:'IBM Plex Mono',monospace;
+    letter-spacing:0.04em;
+  }
+  .field input, .field select, .field textarea{
+    font-family:'Inter',sans-serif;
+    font-size:13.5px;
+    padding:9px 11px;
+    border:1px solid rgba(43,43,43,0.25);
+    border-radius:3px;
+    background:#fffdf8;
+    color:var(--ink);
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{
+    outline:2px solid var(--brass);
+    outline-offset:1px;
+  }
+  button{
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:13px;
+    padding:10px 18px;
+    border-radius:3px;
+    border:none;
+    cursor:pointer;
+    background:var(--ink);
+    color:#EDE6D6;
+  }
+  button:hover{ background:#000; }
+  button.brass{ background:var(--brass); color:#1F2A44; }
+  button.brass:hover{ background:var(--brass-dark); color:#fff; }
+  button.ghost{
+    background:transparent;
+    border:1px solid var(--ink);
+    color:var(--ink);
+    padding:6px 12px;
+    font-size:12px;
+  }
+  button.ghost:hover{ background:var(--ink); color:#fff; }
+  button.small{ padding:5px 10px; font-size:11.5px; }
+
+  .action-cell{ display:flex; gap:6px; }
+
+  .room-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+    gap:14px;
+  }
+  .room-card{
+    background:#fff;
+    border:1px solid var(--rule);
+    border-radius:4px;
+    padding:14px 16px;
+    border-top:3px solid var(--green);
+  }
+  .room-card.full{ border-top-color:var(--red); }
+  .room-card.partial{ border-top-color:var(--brass); }
+  .room-num{ font-family:'Zilla Slab',serif; font-weight:700; font-size:20px; }
+  .room-occ{ font-size:12px; color:var(--ink-soft); margin-top:3px; }
+  .room-names{ font-size:11.5px; color:var(--ink-soft); margin-top:8px; line-height:1.5; }
+
+  .empty{
+    text-align:center;
+    padding:30px 10px;
+    color:var(--ink-soft);
+    font-size:13px;
+    font-style:italic;
+  }
+
+  footer.page-num{
+    text-align:center;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+    margin-top:20px;
+    opacity:0.6;
+  }
+
+  @media (max-width:900px){
+    .app{ flex-direction:column; }
+    .spine{ width:100%; flex-direction:row; overflow-x:auto; padding:14px; align-items:center; }
+    .brand{ display:none; }
+    nav.tabs{ flex-direction:row; }
+    .role-switch{ margin-top:0; margin-left:auto; border-top:none; padding:0 0 0 14px; }
+    .stat-grid{ grid-template-columns:repeat(2,1fr); }
+    .page::before{ display:none; }
+    .page{ padding:28px 20px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .view{ animation:none; }
+  }
+
+  /* === CHATBOT RIGHT SIDEBAR / FLOATING WIDGET STYLES === */
+  .chatbot-container {
+    position: fixed;
+    bottom: 24px;
+    right: 28px;
+    z-index: 9999;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .chatbot-launcher {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 18px 10px 12px;
+    background: linear-gradient(135deg, var(--cover) 0%, var(--cover-2) 100%);
+    color: #EDE6D6;
+    border: 1.5px solid var(--brass);
+    border-radius: 50px;
+    box-shadow: 0 10px 30px rgba(31, 42, 68, 0.42), 0 0 15px rgba(184, 134, 59, 0.3);
+    cursor: pointer;
+    transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    user-select: none;
+  }
+  .chatbot-launcher:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 14px 36px rgba(31, 42, 68, 0.55), 0 0 24px rgba(184, 134, 59, 0.48);
+    border-color: #d89f4b;
+  }
+  .chatbot-launcher:active {
+    transform: translateY(0) scale(0.98);
+  }
+
+  .launcher-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: rgba(184, 134, 59, 0.2);
+    border: 1px solid rgba(184, 134, 59, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    position: relative;
+  }
+
+  .online-indicator {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #10b981;
+    border: 2px solid var(--cover);
+    position: absolute;
+    bottom: -1px;
+    right: -1px;
+    box-shadow: 0 0 6px #10b981;
+    animation: pulse-dot 2s infinite;
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.25); opacity: 0.8; }
+  }
+
+  .launcher-label {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+  }
+  .launcher-title {
+    font-family: 'Zilla Slab', serif;
+    font-weight: 700;
+    font-size: 14.5px;
+    color: #fff;
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+  }
+  .launcher-sub {
+    font-size: 10.5px;
+    color: rgba(237, 230, 214, 0.7);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .launcher-badge {
+    position: absolute;
+    top: -5px;
+    right: -4px;
+    background: var(--red);
+    color: #fff;
+    font-size: 10.5px;
+    font-weight: 700;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--cover);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  /* Chat Window */
+  .chatbot-window {
+    position: fixed;
+    bottom: 86px;
+    right: 28px;
+    width: 400px;
+    max-width: calc(100vw - 32px);
+    height: 600px;
+    max-height: calc(100vh - 110px);
+    background: #FFFDF8;
+    border-radius: 16px;
+    border: 1px solid rgba(184, 134, 59, 0.4);
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.35), 0 0 0 1px rgba(255,255,255,0.25);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform-origin: bottom right;
+    transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    opacity: 0;
+    transform: scale(0.92) translateY(18px);
+    pointer-events: none;
+    z-index: 10000;
+  }
+
+  .chatbot-window.open {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    pointer-events: auto;
+  }
+
+  /* Header */
+  .chatbot-header {
+    background: linear-gradient(135deg, var(--cover) 0%, var(--cover-2) 100%);
+    color: #EDE6D6;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 2px solid var(--brass);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  }
+  .chatbot-header-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .chatbot-header-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(184, 134, 59, 0.22);
+    border: 1px solid var(--brass);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 19px;
+  }
+  .chatbot-header-title {
+    font-family: 'Zilla Slab', serif;
+    font-weight: 700;
+    font-size: 16px;
+    color: #FFF;
+    letter-spacing: 0.02em;
+  }
+  .chatbot-header-status {
+    font-size: 11px;
+    color: rgba(237, 230, 214, 0.75);
+    font-family: 'IBM Plex Mono', monospace;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 1px;
+  }
+  .status-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 5px #10b981;
+  }
+  .chatbot-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .chat-btn-icon {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #EDE6D6;
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 13px;
+    padding: 0;
+    transition: all 0.15s ease;
+  }
+  .chat-btn-icon:hover {
+    background: rgba(184, 134, 59, 0.35);
+    color: #fff;
+    border-color: var(--brass);
+  }
+
+  /* Quick Action Prompt Chips */
+  .chatbot-quick-chips {
+    display: flex;
+    gap: 6px;
+    padding: 10px 14px;
+    background: #F4EFE6;
+    border-bottom: 1px solid rgba(43, 43, 43, 0.1);
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: none;
+  }
+  .chatbot-quick-chips::-webkit-scrollbar {
+    display: none;
+  }
+  .quick-chip {
+    flex-shrink: 0;
+    font-size: 11.5px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    padding: 5px 11px;
+    border-radius: 20px;
+    background: #fff;
+    color: var(--ink);
+    border: 1px solid rgba(43, 43, 43, 0.16);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .quick-chip:hover {
+    background: var(--cover);
+    color: #EDE6D6;
+    border-color: var(--cover);
+    transform: translateY(-1px);
+  }
+
+  /* Messages Area */
+  .chatbot-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    background: #FAF6EE;
+    background-image: linear-gradient(rgba(228,219,198,0.3) 1px, transparent 1px);
+    background-size: 100% 28px;
+    scroll-behavior: smooth;
+  }
+  .chatbot-messages::-webkit-scrollbar {
+    width: 6px;
+  }
+  .chatbot-messages::-webkit-scrollbar-thumb {
+    background: rgba(184, 134, 59, 0.3);
+    border-radius: 4px;
+  }
+
+  .chat-msg {
+    display: flex;
+    flex-direction: column;
+    max-width: 88%;
+    animation: chatFade 0.2s ease-out;
+  }
+  @keyframes chatFade {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .chat-msg.bot {
+    align-self: flex-start;
+  }
+  .chat-msg.user {
+    align-self: flex-end;
+  }
+
+  .chat-bubble {
+    padding: 11px 14px;
+    font-size: 13.5px;
+    line-height: 1.48;
+    border-radius: 14px;
+    position: relative;
+    word-break: break-word;
+  }
+  .chat-msg.bot .chat-bubble {
+    background: #FFFFFF;
+    color: var(--ink);
+    border: 1px solid rgba(43, 43, 43, 0.14);
+    border-left: 3.5px solid var(--brass);
+    border-bottom-left-radius: 3px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  }
+  .chat-msg.user .chat-bubble {
+    background: linear-gradient(135deg, var(--cover) 0%, var(--cover-2) 100%);
+    color: #FFFDF8;
+    border-bottom-right-radius: 3px;
+    box-shadow: 0 3px 10px rgba(31, 42, 68, 0.2);
+  }
+
+  .chat-time {
+    font-size: 10px;
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--ink-soft);
+    margin-top: 4px;
+    padding: 0 4px;
+  }
+  .chat-msg.user .chat-time {
+    align-self: flex-end;
+  }
+
+  .chat-highlight {
+    background: #FEF3C7;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: #92400E;
+    font-weight: 600;
+  }
+  .chat-card {
+    background: #FAF8F3;
+    border: 1px solid rgba(43, 43, 43, 0.12);
+    border-radius: 6px;
+    padding: 9px 11px;
+    margin-top: 8px;
+    font-size: 12.5px;
+  }
+  .chat-card strong {
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--brass-dark);
+  }
+  .chat-inline-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 8px;
+    padding: 6px 12px;
+    font-size: 11.5px;
+    font-weight: 600;
+    border-radius: 4px;
+    background: var(--cover);
+    color: #EDE6D6;
+    border: 1px solid var(--brass);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .chat-inline-btn:hover {
+    background: var(--brass);
+    color: var(--cover);
+    transform: translateY(-1px);
+  }
+
+  /* Typing dots */
+  .chatbot-typing {
+    padding: 8px 16px;
+    display: flex;
+    align-items: center;
+    background: #FAF6EE;
+  }
+  .typing-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--brass);
+    margin-right: 4px;
+    animation: typingBounce 1.2s infinite ease-in-out;
+  }
+  .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes typingBounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+    30% { transform: translateY(-5px); opacity: 1; }
+  }
+
+  /* Input Bar */
+  .chatbot-input-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 14px;
+    background: #FFF;
+    border-top: 1px solid rgba(43, 43, 43, 0.12);
+  }
+  .chatbot-input-bar input {
+    flex: 1;
+    font-family: 'Inter', sans-serif;
+    font-size: 13.5px;
+    padding: 9px 13px;
+    border: 1px solid rgba(43, 43, 43, 0.2);
+    border-radius: 20px;
+    background: #FFFDF8;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .chatbot-input-bar input:focus {
+    border-color: var(--brass);
+    box-shadow: 0 0 0 2px rgba(184, 134, 59, 0.2);
+  }
+  .chatbot-input-bar button[type="submit"] {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--cover);
+    color: var(--brass);
+    border: 1px solid var(--brass);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.18s ease;
+    padding: 0;
+  }
+  .chatbot-input-bar button[type="submit"]:hover {
+    background: var(--brass);
+    color: var(--cover);
+    transform: scale(1.05);
+  }
+
+  @media (max-width: 600px) {
+    .chatbot-window {
+      right: 12px;
+      left: 12px;
+      width: auto;
+      bottom: 80px;
+      height: 72vh;
+    }
+    .chatbot-container {
+      right: 14px;
+      bottom: 16px;
+    }
+    .launcher-label {
+      display: none;
+    }
+    .chatbot-launcher {
+      padding: 8px;
+      border-radius: 50%;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <aside class="spine">
+    <div class="brand">
+      <div class="brand-mark">Tamilnadu College of Engineering</div>
+      <div class="brand-title">The Register</div>
+      <div class="brand-sub">HOSTEL LOG &amp; ADMIN — VOL. 04</div>
+    </div>
+    <nav class="tabs" id="tabs">
+      <div class="tab active" data-view="dashboard"><span class="num">01</span> Dashboard</div>
+      <div class="tab" data-view="register"><span class="num">02</span> Gate Register</div>
+      <div class="tab" data-view="attendance"><span class="num">03</span> Attendance</div>
+      <div class="tab" data-view="rooms"><span class="num">04</span> Rooms</div>
+      <div class="tab" data-view="leave"><span class="num">05</span> Leave Requests</div>
+      <div class="tab" data-view="complaints"><span class="num">06</span> Complaints</div>
+      <div class="tab" data-view="visitors"><span class="num">07</span> Visitor Log</div>
+      <div class="tab" data-view="dslookup"><span class="num">08</span> DS &amp; ID Lookup</div>
+      <div class="tab" data-view="dbviewer" onclick="loadDatabaseView()"><span class="num">09</span> SQLite DB Viewer</div>
+    </nav>
+    <div class="role-switch">
+      <label>Viewing as</label>
+      <div class="role-pills">
+        <button class="role-pill active" data-role="student">Student</button>
+        <button class="role-pill" data-role="warden">Warden</button>
+        <button class="role-pill" data-role="admin">Admin</button>
+      </div>
+    </div>
+  </aside>
+
+  <main class="page">
+    <div class="page-head">
+      <div>
+        <div class="page-eyebrow" id="page-eyebrow">Section 01</div>
+        <h1 id="page-title">Dashboard</h1>
+      </div>
+      <div class="today" id="today"></div>
+    </div>
+
+    <section class="view active" id="view-dashboard">
+      <div class="stat-grid" id="stat-grid"></div>
+      <div class="panel">
+        <h2><span class="dot"></span> Latest gate activity</h2>
+        <table class="ledger">
+          <thead><tr><th>Student</th><th>Room</th><th>Status</th><th>Time</th></tr></thead>
+          <tbody id="dash-recent"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="view" id="view-register">
+      <div class="panel" id="register-form-panel">
+        <h2><span class="dot"></span> Log an entry</h2>
+        <div class="form-row">
+          <div class="field"><label>Student name</label><input id="reg-name" placeholder="e.g. Karthik R"></div>
+          <div class="field"><label>Room no.</label><input id="reg-room" placeholder="e.g. B-204"></div>
+          <div class="field"><label>Direction</label>
+            <select id="reg-dir"><option value="OUT">Going out</option><option value="IN">Returning in</option></select>
+          </div>
+          <div class="field"><label>Reason</label><input id="reg-reason" placeholder="e.g. Market, class trip..."></div>
+          <button class="brass" onclick="addRegisterEntry()">Add entry</button>
+        </div>
+      </div>
+      <div class="panel">
+        <h2><span class="dot"></span> Full register</h2>
+        <table class="ledger">
+          <thead><tr><th>Student</th><th>Room</th><th>Status</th><th>Reason</th><th>Time</th></tr></thead>
+          <tbody id="register-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="view" id="view-attendance">
+      <div class="panel">
+        <h2><span class="dot"></span> Roll call — today</h2>
+        <table class="ledger">
+          <thead><tr><th>Student</th><th>Room</th><th>Status</th><th id="att-action-head">Mark</th></tr></thead>
+          <tbody id="attendance-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="view" id="view-rooms">
+      <div class="panel" id="api-status" style="display:none; border-color:var(--red); color:var(--red); font-size:13px;">
+        Java backend not reachable. Run HostelServer and open <b>http://localhost:8080</b>.
+      </div>
+      <div class="panel">
+        <h2><span class="dot"></span> Apply for a room</h2>
+        <div class="form-row">
+          <div class="field"><label>Student name</label><input id="apply-name" placeholder="e.g. Ravi Kumar"></div>
+          <div class="field"><label>Student ID</label><input id="apply-id" placeholder="e.g. TCE2001"></div>
+          <button class="brass" onclick="applyForRoom()">Join queue</button>
+        </div>
+      </div>
+      <div class="panel">
+        <h2><span class="dot"></span> Allocation queue (first come, first served)</h2>
+        <table class="ledger">
+          <thead><tr><th>#</th><th>Student</th><th>ID</th><th id="queue-action-head"></th></tr></thead>
+          <tbody id="queue-body"></tbody>
+        </table>
+      </div>
+      <div class="panel">
+        <h2><span class="dot"></span> Occupancy map</h2>
+        <div class="room-grid" id="room-grid"></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-leave">
+      <div class="panel" id="leave-form-panel">
+        <h2><span class="dot"></span> Request leave</h2>
+        <div class="form-row">
+          <div class="field"><label>Student name</label><input id="leave-name" placeholder="Your name"></div>
+          <div class="field"><label>From</label><input id="leave-from" type="date"></div>
+          <div class="field"><label>To</label><input id="leave-to" type="date"></div>
+          <div class="field"><label>Reason</label><input id="leave-reason" placeholder="e.g. Home visit"></div>
+          <button class="brass" onclick="addLeaveRequest()">Submit request</button>
+        </div>
+      </div>
+      <div class="panel">
+        <h2><span class="dot"></span> All requests</h2>
+        <table class="ledger">
+          <thead><tr><th>Student</th><th>Dates</th><th>Reason</th><th>Status</th><th></th></tr></thead>
+          <tbody id="leave-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="view" id="view-complaints">
+      <div class="panel">
+        <h2><span class="dot"></span> Raise a complaint</h2>
+        <div class="form-row">
+          <div class="field"><label>Student name</label><input id="comp-name" placeholder="Your name"></div>
+          <div class="field"><label>Room no.</label><input id="comp-room" placeholder="e.g. B-204"></div>
+          <div class="field"><label>Category</label>
+            <select id="comp-cat"><option>Plumbing</option><option>Electrical</option><option>Furniture</option><option>Wi-Fi</option><option>Other</option></select>
+          </div>
+          <div class="field" style="flex:2"><label>Description</label><input id="comp-desc" placeholder="Describe the issue"></div>
+          <button class="brass" onclick="addComplaint()">Submit</button>
+        </div>
+      </div>
+      <div class="panel">
+        <h2><span class="dot"></span> All complaints</h2>
+        <table class="ledger">
+          <thead><tr><th>Student</th><th>Room</th><th>Category</th><th>Description</th><th>Status</th><th></th></tr></thead>
+          <tbody id="complaints-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="view" id="view-visitors">
+      <div class="panel">
+        <h2><span class="dot"></span> Log a visitor</h2>
+        <div class="form-row">
+          <div class="field"><label>Visitor name</label><input id="vis-name" placeholder="e.g. Mr. Suresh"></div>
+          <div class="field"><label>Visiting student</label><input id="vis-student" placeholder="Student's name"></div>
+          <div class="field"><label>Purpose</label><input id="vis-purpose" placeholder="e.g. Parent visit"></div>
+          <div class="field"><label>ID reference</label><input id="vis-id" placeholder="e.g. Aadhaar last 4 digits"></div>
+          <button class="brass" onclick="addVisitor()">Log visitor</button>
+        </div>
+      </div>
+      <div class="panel">
+        <h2><span class="dot"></span> Visitor log</h2>
+        <table class="ledger">
+          <thead><tr><th>Visitor</th><th>Visiting</th><th>Purpose</th><th>ID ref.</th><th>Time</th></tr></thead>
+          <tbody id="visitors-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="view" id="view-dslookup">
+      <div class="panel" style="background:rgba(184,134,59,0.08); border-color:var(--brass);">
+        <h2><span class="dot"></span> Java Data Structures Engine</h2>
+        <p style="font-size:13px; color:var(--ink-soft); margin:0;">
+          This section interacts directly with the Java backend (<b>HostelDataStructures.java</b>).
+          It demonstrates the usage of <b>Queue</b> (Room Allocation FCFS), <b>HashSet</b> (Duplicate Prevention &amp; Unique Student IDs), and <b>HashMap</b> (Constant time O(1) Student Detail retrieval by ID).
+        </p>
+      </div>
+
+      <div class="panel" style="background:#fff8e7; border-left:4px solid var(--brass); color:var(--ink);">
+        <h2 style="font-size:16px; margin-bottom:6px;"><span class="dot" style="background:var(--red);"></span> 🔒 Strict Access Control</h2>
+        <p style="font-size:13px; margin:0; color:var(--ink-soft);">
+          <b>Policy:</b> ONLY registered hostel students are authorized to access data. Access is verified in real-time via the Java <b>HashSet</b> and <b>HashMap</b> security check. Unregistered or non-hostel student IDs will be denied access.
+        </p>
+      </div>
+
+      <!-- HASHMAP O(1) DETAIL LOOKUP -->
+      <div class="panel">
+        <h2><span class="dot"></span> HashMap O(1) Student Detail Retrieval</h2>
+        <div class="form-row">
+          <div class="field" style="flex:2">
+            <label>Student ID</label>
+            <input id="ds-search-id" placeholder="e.g. TCE1001, TCE1003, TCE2001" onkeypress="if(event.key==='Enter') searchStudentDetail()">
+          </div>
+          <button class="brass" onclick="searchStudentDetail()">Get Details (O(1))</button>
+        </div>
+        <div id="ds-detail-result" style="margin-top:16px;"></div>
+      </div>
+
+      <!-- HASHSET DUPLICATE CHECK & DEDUPLICATION -->
+      <div class="panel">
+        <h2><span class="dot"></span> HashSet Unique Record &amp; Duplicate Manager</h2>
+        <div class="form-row" style="align-items:center;">
+          <div class="field">
+            <label>Check ID Uniqueness</label>
+            <input id="ds-check-id" placeholder="e.g. TCE1001" oninput="checkIdUniqueness()">
+          </div>
+          <div id="ds-id-status" style="font-family:'IBM Plex Mono',monospace; font-size:12px; margin-top:18px; padding:8px 12px; border-radius:3px; background:#fff; border:1px solid var(--rule);">
+            Type an ID to check uniqueness
+          </div>
+          <button class="ghost" onclick="runDeduplication()" style="margin-left:auto;">Run HashSet Deduplication</button>
+        </div>
+        <div id="ds-dedup-msg" style="font-size:12px; color:var(--green); margin-top:8px;"></div>
+      </div>
+
+      <!-- QUEUE ALLOCATION LIST -->
+      <div class="panel">
+        <h2><span class="dot"></span> Room Allocation Queue (FCFS LinkedList)</h2>
+        <table class="ledger">
+          <thead><tr><th>Position</th><th>Student Name</th><th>Student ID</th><th>Action</th></tr></thead>
+          <tbody id="ds-queue-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="view" id="view-dbviewer">
+      <div class="panel" style="background:#eef6fc; border-color:#bce0fd;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+          <div>
+            <h2 style="margin:0;"><span class="dot" style="background:#0066cc;"></span> 🗄️ SQLite Database File Viewer (hostel.db)</h2>
+            <p style="font-size:13px; color:var(--ink-soft); margin:4px 0 0 0;">
+              Live contents of SQLite database <b>hostel.db</b> dynamically rendered directly from the Java backend server.
+            </p>
+          </div>
+          <button class="brass" onclick="loadDatabaseView()">🔄 Refresh Database Tables</button>
+        </div>
+      </div>
+
+      <div id="db-tables-container">
+        <div style="font-size:13px; color:var(--ink-soft);">Loading database tables...</div>
+      </div>
+    </section>
+
+    <footer class="page-num">— Powered by Java Backend (Queue, HashSet, HashMap) &amp; SQLite Database —</footer>
+  </main>
+</div>
+
+<!-- FLOATING CHATBOT WIDGET (RIGHT SIDE) -->
+<div class="chatbot-container" id="chatbot-container">
+  <!-- Launcher Button -->
+  <button class="chatbot-launcher" id="chatbot-launcher" onclick="toggleChatbot()" aria-label="Open Hostel Assistant Chatbot">
+    <div class="launcher-avatar">
+      <span class="bot-icon">🤖</span>
+      <span class="online-indicator"></span>
+    </div>
+    <div class="launcher-label">
+      <span class="launcher-title">Hostel Assistant</span>
+      <span class="launcher-sub">Ask AI &amp; FAQ</span>
+    </div>
+    <div class="launcher-badge" id="launcher-badge">1</div>
+  </button>
+
+  <!-- Chat Window -->
+  <div class="chatbot-window" id="chatbot-window">
+    <!-- Header -->
+    <div class="chatbot-header">
+      <div class="chatbot-header-info">
+        <div class="chatbot-header-avatar">🤖</div>
+        <div>
+          <div class="chatbot-header-title">The Register Assistant</div>
+          <div class="chatbot-header-status">
+            <span class="status-dot"></span> Online • Tamil &amp; English
+          </div>
+        </div>
+      </div>
+      <div class="chatbot-header-actions">
+        <button class="chat-btn-icon" onclick="clearChatHistory()" title="Clear Conversation" aria-label="Clear chat">🗑️</button>
+        <button class="chat-btn-icon" onclick="toggleChatSound()" id="sound-btn" title="Toggle Sound" aria-label="Toggle sound">🔕</button>
+        <button class="chat-btn-icon" onclick="toggleChatbot()" title="Close Chat" aria-label="Close chat">✕</button>
+      </div>
+    </div>
+
+    <!-- Quick Prompts / Chip Carousel -->
+    <div class="chatbot-quick-chips" id="chatbot-quick-chips">
+      <button class="quick-chip" onclick="handleQuickChip('Vacant Rooms')">🏨 Vacant Rooms</button>
+      <button class="quick-chip" onclick="handleQuickChip('Mess & Gate Timings')">⏰ Mess &amp; Curfew</button>
+      <button class="quick-chip" onclick="handleQuickChip('Where is Divya staying?')">🔍 Find Student</button>
+      <button class="quick-chip" onclick="handleQuickChip('How to apply for leave?')">📋 Leave Process</button>
+      <button class="quick-chip" onclick="handleQuickChip('Warden & Emergency Contacts')">📞 Emergency</button>
+      <button class="quick-chip" onclick="handleQuickChip('How to raise a complaint?')">⚠️ Complaints</button>
+      <button class="quick-chip" onclick="handleQuickChip('Visitor Rules')">👥 Visitor Rules</button>
+    </div>
+
+    <!-- Message Area -->
+    <div class="chatbot-messages" id="chatbot-messages">
+      <!-- Welcome message dynamically injected -->
+    </div>
+
+    <!-- Typing Indicator -->
+    <div class="chatbot-typing" id="chatbot-typing" style="display:none;">
+      <span class="typing-dot"></span>
+      <span class="typing-dot"></span>
+      <span class="typing-dot"></span>
+      <span style="font-size:11px; margin-left:6px; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace;">Assistant is typing...</span>
+    </div>
+
+    <!-- Input Form -->
+    <form class="chatbot-input-bar" id="chatbot-form" onsubmit="handleChatSubmit(event)">
+      <input type="text" id="chat-input" placeholder="Ask about rooms, timings, students... (English/Tamil)" autocomplete="off">
+      <button type="submit" id="chat-send-btn" aria-label="Send message" title="Send message">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
+    </form>
+  </div>
+</div>
+
+<script>
+let state = {
+  role: 'student',
+  register: [
+    {name:'Karthik R', room:'B-204', dir:'OUT', reason:'Grocery run', time:'08:12 AM'},
+    {name:'Divya S', room:'A-112', dir:'IN', reason:'Returned from class', time:'09:40 AM'},
+    {name:'Mohan V', room:'C-301', dir:'OUT', reason:'Doctor visit', time:'10:05 AM'},
+  ],
+  attendance: [
+    {name:'Karthik R', room:'B-204', status:'present'},
+    {name:'Divya S', room:'A-112', status:'present'},
+    {name:'Mohan V', room:'C-301', status:'absent'},
+    {name:'Priya N', room:'A-112', status:'present'},
+    {name:'Arun K', room:'B-204', status:'present'},
+  ],
+  queue: [],
+  rooms: [
+    {num:'A-112', cap:3, occ:['Divya S','Priya N']},
+    {num:'B-204', cap:2, occ:['Karthik R','Arun K']},
+    {num:'C-301', cap:2, occ:['Mohan V']},
+    {num:'C-302', cap:2, occ:[]},
+    {num:'D-410', cap:3, occ:['Naveen T','Suresh M','Vikram J']},
+  ],
+  leave: [
+    {name:'Priya N', from:'2026-07-22', to:'2026-07-24', reason:'Home visit', status:'pending'},
+    {name:'Arun K', from:'2026-07-19', to:'2026-07-20', reason:'Family function', status:'approved'},
+  ],
+  complaints: [
+    {name:'Naveen T', room:'D-410', cat:'Electrical', desc:'Fan not working', status:'open'},
+    {name:'Divya S', room:'A-112', cat:'Wi-Fi', desc:'No signal in room', status:'progress'},
+  ],
+  visitors: [
+    {visitor:'Mrs. Lakshmi', student:'Karthik R', purpose:'Parent visit', idref:'—', time:'11:20 AM'},
+  ],
+};
+
+function isValidHostelStudentName(name) {
+  if (!name || !name.trim()) return false;
+  const clean = name.trim().toLowerCase();
+  let found = false;
+
+  // Check room occupants
+  state.rooms.forEach(r => {
+    r.occ.forEach(o => {
+      const sName = typeof o === 'string' ? o : o.name;
+      if (sName && (sName.trim().toLowerCase() === clean || sName.toLowerCase().includes(clean) || clean.includes(sName.toLowerCase()))) {
+        found = true;
+      }
+    });
+  });
+
+  // Check roll call records
+  if (!found && state.attendance) {
+    state.attendance.forEach(a => {
+      if (a.name && (a.name.trim().toLowerCase() === clean || a.name.toLowerCase().includes(clean) || clean.includes(a.name.toLowerCase()))) {
+        found = true;
+      }
+    });
+  }
+
+  // Check allocation queue
+  if (!found && state.queue) {
+    state.queue.forEach(q => {
+      if (q.name && (q.name.trim().toLowerCase() === clean || q.name.toLowerCase().includes(clean) || clean.includes(q.name.toLowerCase()))) {
+        found = true;
+      }
+    });
+  }
+
+  return found;
+}
+
+const views = {
+  dashboard:{title:'Dashboard', eyebrow:'Section 01'},
+  register:{title:'Gate Register', eyebrow:'Section 02'},
+  attendance:{title:'Attendance', eyebrow:'Section 03'},
+  rooms:{title:'Rooms', eyebrow:'Section 04'},
+  leave:{title:'Leave Requests', eyebrow:'Section 05'},
+  complaints:{title:'Complaints', eyebrow:'Section 06'},
+  visitors:{title:'Visitor Log', eyebrow:'Section 07'},
+  dslookup:{title:'Data Structures & ID Lookup', eyebrow:'Section 08'},
+  dbviewer:{title:'SQLite Database Viewer', eyebrow:'Section 09'},
+};
+
+function switchView(key){
+  if(!views[key]) return;
+  document.querySelectorAll('.tab').forEach(t=>{
+    if(t.dataset.view === key) t.classList.add('active');
+    else t.classList.remove('active');
+  });
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  const target = document.getElementById('view-'+key);
+  if(target) target.classList.add('active');
+  document.getElementById('page-title').textContent = views[key].title;
+  document.getElementById('page-eyebrow').textContent = views[key].eyebrow;
+  if(key === 'dbviewer') loadDatabaseView();
+}
+
+document.getElementById('tabs').addEventListener('click', e=>{
+  const tab = e.target.closest('.tab');
+  if(!tab) return;
+  switchView(tab.dataset.view);
+});
+
+document.querySelectorAll('.role-pill').forEach(p=>{
+  p.addEventListener('click', ()=>{
+    document.querySelectorAll('.role-pill').forEach(x=>x.classList.remove('active'));
+    p.classList.add('active');
+    state.role = p.dataset.role;
+    renderAll();
+  });
+});
+
+document.getElementById('today').textContent = new Date().toLocaleDateString('en-IN', {weekday:'long', year:'numeric', month:'long', day:'numeric'});
+
+function renderDashboard(){
+  const totalCap = state.rooms.reduce((a,r)=>a+r.cap,0);
+  const totalOcc = state.rooms.reduce((a,r)=>a+r.occ.length,0);
+  const present = state.attendance.filter(a=>a.status==='present').length;
+  const openComplaints = state.complaints.filter(c=>c.status!=='resolved').length;
+  const pendingLeave = state.leave.filter(l=>l.status==='pending').length;
+
+  const cards = [
+    {num: `${totalOcc}/${totalCap}`, label:'Beds occupied', cls:''},
+    {num: `${present}/${state.attendance.length}`, label:'Present today', cls:'good'},
+    {num: openComplaints, label:'Open complaints', cls: openComplaints>0 ? 'alert':'good'},
+    {num: pendingLeave, label:'Pending leave requests', cls: pendingLeave>0 ? 'alert':'good'},
+  ];
+  document.getElementById('stat-grid').innerHTML = cards.map(c=>`
+    <div class="stat-card ${c.cls}">
+      <div class="stat-num">${c.num}</div>
+      <div class="stat-label">${c.label}</div>
+    </div>`).join('');
+
+  const recent = [...state.register].slice(-5).reverse();
+  document.getElementById('dash-recent').innerHTML = recent.length ? recent.map(r=>`
+    <tr><td>${r.name}</td><td>${r.room}</td>
+    <td><span class="stamp ${r.dir==='IN'?'in':'out'}">${r.dir}</span></td>
+    <td>${r.time}</td></tr>`).join('') : `<tr><td colspan="4" class="empty">No entries yet.</td></tr>`;
+}
+
+function renderRegister(){
+  document.getElementById('register-form-panel').style.display = 'block';
+  document.getElementById('register-body').innerHTML = state.register.length ? [...state.register].reverse().map(r=>`
+    <tr>
+      <td>${r.name}</td><td>${r.room}</td>
+      <td><span class="stamp ${r.dir==='IN'?'in':'out'}">${r.dir}</span></td>
+      <td>${r.reason||'—'}</td><td>${r.time}</td>
+    </tr>`).join('') : `<tr><td colspan="5" class="empty">Register is empty. Log the first entry above.</td></tr>`;
+}
+
+function addRegisterEntry(){
+  const name = document.getElementById('reg-name').value.trim();
+  const room = document.getElementById('reg-room').value.trim();
+  const dir = document.getElementById('reg-dir').value;
+  const reason = document.getElementById('reg-reason').value.trim();
+  if(!name || !room){ alert('Enter student name and room number.'); return; }
+
+  if(!isValidHostelStudentName(name)){
+    alert('❌ ACCESS DENIED: Student "' + name + '" is NOT a registered hostel student!\n\nGate register entries can ONLY be logged for registered hostel students.');
+    return;
+  }
+
+  const time = new Date().toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'});
+  state.register.push({name, room, dir, reason, time});
+  saveStateToStorage();
+  document.getElementById('reg-name').value='';
+  document.getElementById('reg-room').value='';
+  document.getElementById('reg-reason').value='';
+  renderAll();
+}
+
+function renderAttendance(){
+  const canMark = state.role !== 'student';
+  document.getElementById('att-action-head').textContent = canMark ? 'Mark' : 'Status';
+  document.getElementById('attendance-body').innerHTML = state.attendance.map((a,i)=>`
+    <tr>
+      <td>${a.name}</td><td>${a.room}</td>
+      <td><span class="stamp ${a.status}">${a.status.toUpperCase()}</span></td>
+      <td>${canMark ? `
+        <div class="action-cell">
+          <button class="ghost small" onclick="setAttendance(${i},'present')">Present</button>
+          <button class="ghost small" onclick="setAttendance(${i},'absent')">Absent</button>
+        </div>` : '<span style="color:var(--ink-soft); font-size:12px;">Warden-only</span>'}
+      </td>
+    </tr>`).join('');
+}
+function setAttendance(i, status){
+  state.attendance[i].status = status;
+  saveStateToStorage();
+  renderAll();
+}
+
+function renderRooms(){
+  document.getElementById('room-grid').innerHTML = state.rooms.map(r=>{
+    const ratio = r.occ.length / r.cap;
+    const cls = ratio>=1 ? 'full' : ratio>0 ? 'partial' : '';
+    return `<div class="room-card ${cls}">
+      <div class="room-num">${r.num}</div>
+      <div class="room-occ">${r.occ.length} / ${r.cap} beds filled</div>
+      <div class="room-names">${r.occ.length ? r.occ.map(o=>{
+        const n = typeof o==='string' ? o : o.name;
+        const vac = (typeof o!=='string' && state.role!=='student')
+          ? ` <button class="ghost small" style="padding:1px 6px;font-size:10px" title="Vacate" onclick="vacateStudent('${esc(o.id)}')">✕</button>` : '';
+        return `<div>${esc(n)}${vac}</div>`;
+      }).join('') : 'Vacant'}</div>
+    </div>`;
+  }).join('');
+}
+
+const API = location.protocol === 'file:' ? 'http://localhost:8080/api' : '/api';
+
+function esc(t){
+  return String(t).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+async function api(path, method='GET', body){
+  try {
+    const res = await fetch(API+path, {
+      method,
+      headers: body ? {'Content-Type':'application/json'} : {},
+      body: body ? JSON.stringify(body) : undefined
+    });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error || data.message || 'Request failed');
+    return data;
+  } catch(err) {
+    if (err.name === 'TypeError' || err.message === 'Failed to fetch' || (err.message && (err.message.includes('Failed to fetch') || err.message.includes('NetworkError')))) {
+      const offlineErr = new Error('Java backend server not reachable at http://localhost:8080. Start the server via "npm run dev" or run.bat');
+      offlineErr.isOffline = true;
+      throw offlineErr;
+    }
+    throw err;
+  }
+}
+
+async function loadRooms(){
+  const banner = document.getElementById('api-status');
+  try{
+    const data = await api('/state');
+    state.rooms = data.rooms;
+    state.queue = data.queue;
+    banner.style.display = 'none';
+    renderAll();
+  }catch(e){
+    banner.style.display = 'block';
+  }
+}
+
+async function applyForRoom(){
+  const name = document.getElementById('apply-name').value.trim();
+  const id = document.getElementById('apply-id').value.trim();
+  if(!name || !id){ alert('Enter student name and ID.'); return; }
+  let savedToBackend = false;
+  try{
+    await api('/apply','POST',{name, id});
+    savedToBackend = true;
+    await loadRooms();
+  }catch(e){
+    if(!e.isOffline){
+      alert('❌ ' + e.message);
+      return;
+    }
+  }
+
+  if (!savedToBackend) {
+    state.queue.push({name, id});
+    saveStateToStorage();
+    renderAll();
+    alert('✅ ' + name + ' added to allocation queue!\n\n(Saved in session. Start the backend via "npm run dev" or run.bat to sync with SQLite database)');
+  } else {
+    alert('✅ ' + name + ' added to allocation queue.');
+  }
+
+  document.getElementById('apply-name').value='';
+  document.getElementById('apply-id').value='';
+}
+
+async function allocateNext(){
+  try{
+    const r = await api('/allocate','POST');
+    alert('✅ ' + r.student.name + ' allocated to room ' + r.room);
+    await loadRooms();
+  }catch(e){
+    if (e.isOffline) {
+      if (!state.queue.length) { alert('Allocation queue is empty.'); return; }
+      const student = state.queue.shift();
+      const freeRoom = state.rooms.find(r => r.occ.length < r.cap);
+      if (freeRoom) {
+        freeRoom.occ.push({id: student.id, name: student.name});
+        saveStateToStorage();
+        renderAll();
+        alert('✅ ' + student.name + ' allocated to room ' + freeRoom.num + ' (session allocation).');
+      } else {
+        state.queue.unshift(student);
+        alert('All rooms are full! No vacant beds available.');
+      }
+      return;
+    }
+    alert(e.message);
+  }
+}
+
+async function vacateStudent(id){
+  if(!confirm('Vacate student ' + id + '?')) return;
+  try{
+    await api('/vacate','POST',{id});
+    await loadRooms();
+  }catch(e){ alert(e.message); }
+}
+
+function renderQueue(){
+  const canAllocate = state.role !== 'student';
+  document.getElementById('queue-action-head').innerHTML = canAllocate && state.queue.length
+    ? '<button class="brass small" onclick="allocateNext()">Allocate next</button>' : '';
+  const rows = state.queue.length ? state.queue.map((s,i)=>`
+    <tr><td>#${i+1}</td><td>${esc(s.name)}</td><td>${esc(s.id)}</td><td>${i===0 ? '<span class="stamp pending">NEXT IN QUEUE</span>' : ''}</td></tr>
+  `).join('') : `<tr><td colspan="4" class="empty">Allocation Queue is empty.</td></tr>`;
+
+  document.getElementById('queue-body').innerHTML = rows;
+  const dsBody = document.getElementById('ds-queue-body');
+  if(dsBody) {
+    dsBody.innerHTML = state.queue.length ? state.queue.map((s,i)=>`
+      <tr>
+        <td><b>#${i+1}</b></td>
+        <td>${esc(s.name)}</td>
+        <td><code style="font-family:'IBM Plex Mono',monospace;">${esc(s.id)}</code></td>
+        <td>${canAllocate && i===0 ? '<button class="brass small" onclick="allocateNext()">Poll & Allocate</button>' : (i===0 ? '<span class="stamp pending">FIRST IN LINE</span>' : 'In Queue')}</td>
+      </tr>
+    `).join('') : `<tr><td colspan="4" class="empty">Queue is empty. Join queue above.</td></tr>`;
+  }
+}
+
+function renderLeave(){
+  const canDecide = state.role !== 'student';
+  document.getElementById('leave-body').innerHTML = state.leave.length ? [...state.leave].reverse().map((l)=>{
+    const realIdx = state.leave.indexOf(l);
+    return `<tr>
+      <td>${l.name}</td>
+      <td>${l.from} → ${l.to}</td>
+      <td>${l.reason}</td>
+      <td><span class="stamp ${l.status==='approved'?'in':l.status==='rejected'?'out':'pending'}">${l.status.toUpperCase()}</span></td>
+      <td>${canDecide && l.status==='pending' ? `
+        <div class="action-cell">
+          <button class="ghost small" onclick="decideLeave(${realIdx},'approved')">Approve</button>
+          <button class="ghost small" onclick="decideLeave(${realIdx},'rejected')">Reject</button>
+        </div>` : ''}
+      </td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="5" class="empty">No leave requests yet.</td></tr>`;
+}
+async function addLeaveRequest(){
+  const name = document.getElementById('leave-name').value.trim();
+  const from = document.getElementById('leave-from').value;
+  const to = document.getElementById('leave-to').value;
+  const reason = document.getElementById('leave-reason').value.trim();
+  if(!name || !from || !to){ alert('Please fill in student name and both dates.'); return; }
+
+  if(!isValidHostelStudentName(name)){
+    alert('❌ ACCESS DENIED: Student "' + name + '" is not registered in the hostel records.\n\nOnly registered hostel students can request leave. (Registered student names: Divya S, Priya N, Karthik R, Arun K, Mohan V, Naveen T, Suresh M, Vikram J).');
+    return;
+  }
+
+  let savedToBackend = false;
+  try {
+    const res = await api('/leave', 'POST', {name, from, to, reason});
+    if (res && res.success) savedToBackend = true;
+  } catch(e) {
+    if (!e.isOffline) {
+      alert('❌ ' + e.message);
+      return;
+    }
+  }
+
+  // Update state & persist locally so leave request is saved
+  state.leave.push({name, from, to, reason, status:'pending'});
+  saveStateToStorage();
+  document.getElementById('leave-name').value='';
+  document.getElementById('leave-from').value='';
+  document.getElementById('leave-to').value='';
+  document.getElementById('leave-reason').value='';
+  renderAll();
+
+  if (savedToBackend) {
+    alert('✅ Leave request submitted successfully & saved to SQLite database.');
+  } else {
+    alert('✅ Leave request submitted successfully!\n\n(Saved in current session. To sync with SQLite database, start the backend via "npm run dev" or run.bat)');
+  }
+}
+function decideLeave(i, status){
+  state.leave[i].status = status;
+  saveStateToStorage();
+  renderAll();
+}
+
+function renderComplaints(){
+  const canManage = state.role !== 'student';
+  document.getElementById('complaints-body').innerHTML = state.complaints.length ? [...state.complaints].reverse().map((c)=>{
+    const realIdx = state.complaints.indexOf(c);
+    const cls = c.status==='resolved' ? 'resolved' : c.status==='progress' ? 'progress' : 'open';
+    return `<tr>
+      <td>${c.name}</td><td>${c.room}</td><td>${c.cat}</td><td>${c.desc}</td>
+      <td><span class="stamp ${cls}">${c.status.toUpperCase()}</span></td>
+      <td>${canManage && c.status!=='resolved' ? `
+        <div class="action-cell">
+          ${c.status==='open' ? `<button class="ghost small" onclick="setComplaint(${realIdx},'progress')">In progress</button>` : ''}
+          <button class="ghost small" onclick="setComplaint(${realIdx},'resolved')">Resolve</button>
+        </div>` : ''}
+      </td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="6" class="empty">No complaints logged.</td></tr>`;
+}
+
+async function addComplaint(){
+  const name = document.getElementById('comp-name').value.trim();
+  const room = document.getElementById('comp-room').value.trim();
+  const cat = document.getElementById('comp-cat').value;
+  const desc = document.getElementById('comp-desc').value.trim();
+  if(!name || !room || !desc){ alert('Please fill in name, room and description.'); return; }
+
+  if(!isValidHostelStudentName(name)){
+    alert('❌ ACCESS DENIED: Student "' + name + '" is not registered in the hostel records.\n\nOnly registered hostel students can raise complaints. (Registered student names: Divya S, Priya N, Karthik R, Arun K, Mohan V, Naveen T, Suresh M, Vikram J).');
+    return;
+  }
+
+  let savedToBackend = false;
+  try {
+    const res = await api('/complaint', 'POST', {name, room, cat, desc});
+    if (res && res.success) savedToBackend = true;
+  } catch(e) {
+    if (!e.isOffline) {
+      alert('❌ ' + e.message);
+      return;
+    }
+  }
+
+  state.complaints.push({name, room, cat, desc, status:'open'});
+  saveStateToStorage();
+  document.getElementById('comp-name').value='';
+  document.getElementById('comp-room').value='';
+  document.getElementById('comp-desc').value='';
+  renderAll();
+
+  if (savedToBackend) {
+    alert('✅ Complaint submitted successfully & saved to SQLite database.');
+  } else {
+    alert('✅ Complaint submitted successfully!\n\n(Saved in current session. To sync with SQLite database, start the backend via "npm run dev" or run.bat)');
+  }
+}
+function setComplaint(i, status){
+  state.complaints[i].status = status;
+  saveStateToStorage();
+  renderAll();
+}
+
+function renderVisitors(){
+  document.getElementById('visitors-body').innerHTML = state.visitors.length ? [...state.visitors].reverse().map(v=>`
+    <tr><td>${v.visitor}</td><td>${v.student}</td><td>${v.purpose}</td><td>${v.idref||'—'}</td><td>${v.time}</td></tr>
+  `).join('') : `<tr><td colspan="5" class="empty">No visitors logged today.</td></tr>`;
+}
+function addVisitor(){
+  const visitor = document.getElementById('vis-name').value.trim();
+  const student = document.getElementById('vis-student').value.trim();
+  const purpose = document.getElementById('vis-purpose').value.trim();
+  const idref = document.getElementById('vis-id').value.trim();
+  if(!visitor || !student){ alert('Enter visitor name and visiting student.'); return; }
+
+  if(!isValidHostelStudentName(student)){
+    alert('❌ ACCESS DENIED: Visiting student "' + student + '" is NOT a registered hostel student!\n\nVisitor entries can ONLY be logged for registered hostel students in the database. This entry will NOT be added to the app.');
+    return;
+  }
+
+  const time = new Date().toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'});
+  state.visitors.push({visitor, student, purpose, idref, time});
+  document.getElementById('vis-name').value='';
+  document.getElementById('vis-student').value='';
+  document.getElementById('vis-purpose').value='';
+  document.getElementById('vis-id').value='';
+  renderAll();
+}
+
+async function searchStudentDetail() {
+  const id = document.getElementById('ds-search-id').value.trim();
+  const container = document.getElementById('ds-detail-result');
+  if(!id) {
+    container.innerHTML = '<div style="color:var(--red); font-size:13px;">Please enter a Student ID.</div>';
+    return;
+  }
+  container.innerHTML = '<div style="font-size:13px; color:var(--ink-soft);">Querying Java HashMap...</div>';
+  try {
+    const data = await api('/student-detail?id=' + encodeURIComponent(id));
+    if(!data.found || data.accessDenied) {
+      container.innerHTML = `
+        <div style="background:#fff3f3; border:1px solid var(--red); border-left:4px solid var(--red); padding:14px 16px; border-radius:4px; color:var(--red);">
+          <div style="font-weight:700; font-family:'IBM Plex Mono',monospace; font-size:12px; letter-spacing:0.06em;">🚫 ACCESS DENIED</div>
+          <div style="font-size:13px; margin-top:4px; color:var(--ink);">${esc(data.message || 'Only registered hostel students are authorized to access data.')}</div>
+        </div>`;
+      return;
+    }
+    container.innerHTML = `
+      <div style="background:#fff; border:1px solid var(--rule); border-left:4px solid var(--brass); padding:16px; border-radius:4px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+          <div>
+            <h3 style="margin:0; font-family:'Zilla Slab',serif; font-size:20px;">${esc(data.name)} <span style="font-size:13px; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace;">(${esc(data.id)})</span></h3>
+            <div style="font-size:13px; color:var(--ink-soft); margin-top:4px;">Room: <b>${esc(data.roomNum)}</b> | Status: <b>${esc(data.attendanceStatus)}</b></div>
+          </div>
+          <div>
+            <span class="stamp in" style="font-size:10px;">${esc(data.lookupTime)}</span>
+          </div>
+        </div>
+        <div style="margin-top:14px; display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px; font-size:12px;">
+          <div style="background:#faf8f3; padding:10px; border-radius:3px; border:1px solid var(--rule);">
+            <strong style="font-family:'IBM Plex Mono',monospace; color:var(--brass-dark);">Gate Log History:</strong>
+            <ul style="margin:4px 0 0 16px; padding:0;">
+              ${data.gateHistory.length ? data.gateHistory.map(g => `<li>${esc(g)}</li>`).join('') : '<li style="font-style:italic; color:var(--ink-soft);">No gate logs</li>'}
+            </ul>
+          </div>
+          <div style="background:#faf8f3; padding:10px; border-radius:3px; border:1px solid var(--rule);">
+            <strong style="font-family:'IBM Plex Mono',monospace; color:var(--brass-dark);">Leave Requests:</strong>
+            <ul style="margin:4px 0 0 16px; padding:0;">
+              ${data.leaveHistory.length ? data.leaveHistory.map(l => `<li>${esc(l)}</li>`).join('') : '<li style="font-style:italic; color:var(--ink-soft);">No leave logs</li>'}
+            </ul>
+          </div>
+          <div style="background:#faf8f3; padding:10px; border-radius:3px; border:1px solid var(--rule);">
+            <strong style="font-family:'IBM Plex Mono',monospace; color:var(--brass-dark);">Complaints Logged:</strong>
+            <ul style="margin:4px 0 0 16px; padding:0;">
+              ${data.complaintsHistory.length ? data.complaintsHistory.map(c => `<li>${esc(c)}</li>`).join('') : '<li style="font-style:italic; color:var(--ink-soft);">No complaints</li>'}
+            </ul>
+          </div>
+        </div>
+      </div>
+    `;
+  } catch(e) {
+    container.innerHTML = `<div style="color:var(--red); font-size:13px;">Error: ${esc(e.message)}</div>`;
+  }
+}
+
+function checkIdUniqueness() {
+  const val = document.getElementById('ds-check-id').value.trim().toUpperCase();
+  const target = document.getElementById('ds-id-status');
+  if(!val) {
+    target.innerHTML = 'Type an ID to check uniqueness';
+    target.style.borderColor = 'var(--rule)';
+    target.style.color = 'var(--ink)';
+    return;
+  }
+  // Check against active room occupants & queue IDs
+  let isFound = false;
+  state.rooms.forEach(r => r.occ.forEach(o => {
+    const id = typeof o === 'string' ? '' : o.id;
+    if(id && id.toUpperCase() === val) isFound = true;
+  }));
+  state.queue.forEach(q => {
+    if(q.id && q.id.toUpperCase() === val) isFound = true;
+  });
+
+  if(isFound) {
+    target.innerHTML = `⚠️ ID <b>${esc(val)}</b> EXISTS in system (HashSet check: Registered)`;
+    target.style.borderColor = 'var(--red)';
+    target.style.color = 'var(--red)';
+  } else {
+    target.innerHTML = `✅ ID <b>${esc(val)}</b> is UNIQUE (HashSet check: Available)`;
+    target.style.borderColor = 'var(--green)';
+    target.style.color = 'var(--green)';
+  }
+}
+
+async function runDeduplication() {
+  try {
+    const res = await api('/deduplicate', 'POST');
+    document.getElementById('ds-dedup-msg').textContent = res.message;
+    await loadRooms();
+  } catch(e) {
+    alert(e.message);
+  }
+}
+
+async function loadDatabaseView() {
+  const container = document.getElementById('db-tables-container');
+  if(!container) return;
+  container.innerHTML = '<div style="font-size:13px; color:var(--ink-soft);">Fetching live tables from hostel.db...</div>';
+  try {
+    const data = await api('/database-view');
+    const tableNames = Object.keys(data);
+    let html = '';
+    tableNames.forEach(tName => {
+      const rows = data[tName];
+      const cols = rows.length ? Object.keys(rows[0]) : [];
+      html += `
+        <div class="panel">
+          <h2 style="text-transform:uppercase; font-size:15px;"><span class="dot"></span> Table: ${esc(tName)} (${rows.length} rows)</h2>
+          ${rows.length ? `
+            <div style="overflow-x:auto;">
+              <table class="ledger">
+                <thead>
+                  <tr>${cols.map(c => `<th>${esc(c)}</th>`).join('')}</tr>
+                </thead>
+                <tbody>
+                  ${rows.map(r => `
+                    <tr>${cols.map(c => `<td>${esc(r[c])}</td>`).join('')}</tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          ` : '<div style="font-size:12px; color:var(--ink-soft); font-style:italic;">(Table is empty)</div>'}
+        </div>
+      `;
+    });
+    container.innerHTML = html;
+  } catch(e) {
+    container.innerHTML = `<div style="color:var(--red); font-size:13px;">Error reading database: ${esc(e.message)}</div>`;
+  }
+}
+
+function saveStateToStorage() {
+  try {
+    localStorage.setItem('hostel_state', JSON.stringify({
+      leave: state.leave,
+      complaints: state.complaints,
+      register: state.register,
+      queue: state.queue,
+      attendance: state.attendance
+    }));
+  } catch(e) {}
+}
+
+function loadStateFromStorage() {
+  try {
+    const raw = localStorage.getItem('hostel_state');
+    if (raw) {
+      const saved = JSON.parse(raw);
+      if (saved.leave && Array.isArray(saved.leave) && saved.leave.length) state.leave = saved.leave;
+      if (saved.complaints && Array.isArray(saved.complaints) && saved.complaints.length) state.complaints = saved.complaints;
+      if (saved.register && Array.isArray(saved.register) && saved.register.length) state.register = saved.register;
+      if (saved.queue && Array.isArray(saved.queue)) state.queue = saved.queue;
+      if (saved.attendance && Array.isArray(saved.attendance)) state.attendance = saved.attendance;
+    }
+  } catch(e) {}
+}
+
+function renderAll(){
+  renderDashboard();
+  renderRegister();
+  renderAttendance();
+  renderRooms();
+  renderLeave();
+  renderComplaints();
+  renderVisitors();
+  renderQueue();
+}
+loadStateFromStorage();
+renderAll();
+loadRooms();
+
+// ==================== CHATBOT INTELLIGENCE ENGINE ====================
+let chatSoundEnabled = false;
+let isChatOpen = false;
+let chatUnreadCount = 1;
+
+function playChatChime() {
+  if(!chatSoundEnabled) return;
+  try {
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.type = 'sine';
+    const now = audioCtx.currentTime;
+    osc.frequency.setValueAtTime(587.33, now); // D5
+    osc.frequency.exponentialRampToValueAtTime(880, now + 0.12); // A5
+    gain.gain.setValueAtTime(0.08, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+    osc.start(now);
+    osc.stop(now + 0.25);
+  } catch(e) {}
+}
+
+function toggleChatSound() {
+  chatSoundEnabled = !chatSoundEnabled;
+  const btn = document.getElementById('sound-btn');
+  if(btn) {
+    btn.textContent = chatSoundEnabled ? '🔔' : '🔕';
+    btn.title = chatSoundEnabled ? 'Mute Sound' : 'Enable Sound';
+  }
+  if(chatSoundEnabled) playChatChime();
+}
+
+function toggleChatbot() {
+  const win = document.getElementById('chatbot-window');
+  const badge = document.getElementById('launcher-badge');
+  isChatOpen = !isChatOpen;
+  if(isChatOpen) {
+    win.classList.add('open');
+    chatUnreadCount = 0;
+    if(badge) badge.style.display = 'none';
+    setTimeout(() => {
+      const input = document.getElementById('chat-input');
+      if(input) input.focus();
+    }, 200);
+  } else {
+    win.classList.remove('open');
+  }
+}
+
+function clearChatHistory() {
+  const container = document.getElementById('chatbot-messages');
+  container.innerHTML = '';
+  injectBotWelcome();
+}
+
+function injectBotWelcome() {
+  const container = document.getElementById('chatbot-messages');
+  const time = new Date().toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'});
+  const html = `
+    <div class="chat-msg bot">
+      <div class="chat-bubble">
+        <div style="font-family:'Zilla Slab',serif; font-size:15px; font-weight:700; color:var(--cover); margin-bottom:4px;">
+          👋 Vanakkam! I am The Register Assistant.
+        </div>
+        <div>
+          I can help you with live hostel information, room vacancies, timings, student locator, and guidelines. You can ask me in <b>English</b> or <b>Tamil / Tanglish</b>!
+        </div>
+        <div class="chat-card">
+          <strong>Popular questions:</strong>
+          <ul style="margin:4px 0 0 16px; padding:0; line-height:1.45;">
+            <li>"Any rooms available?" / "room irukka?"</li>
+            <li>"Mess timings" / "saapadu time enna?"</li>
+            <li>"Where is Divya staying?" / "Find room for Karthik"</li>
+            <li>"Gate curfew time" / "gate eppo close aagum?"</li>
+            <li>"How to apply for leave?"</li>
+            <li>"Warden contact number"</li>
+          </ul>
+        </div>
+      </div>
+      <div class="chat-time">${time}</div>
+    </div>
+  `;
+  container.innerHTML = html;
+}
+
+function handleQuickChip(promptText) {
+  const input = document.getElementById('chat-input');
+  input.value = promptText;
+  handleChatSubmit(new Event('submit'));
+}
+
+function appendUserMessage(text) {
+  const container = document.getElementById('chatbot-messages');
+  const time = new Date().toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'});
+  const div = document.createElement('div');
+  div.className = 'chat-msg user';
+  div.innerHTML = `
+    <div class="chat-bubble">${esc(text)}</div>
+    <div class="chat-time">${time}</div>
+  `;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function appendBotMessage(htmlContent) {
+  const container = document.getElementById('chatbot-messages');
+  const time = new Date().toLocaleTimeString('en-IN', {hour:'2-digit', minute:'2-digit'});
+  const div = document.createElement('div');
+  div.className = 'chat-msg bot';
+  div.innerHTML = `
+    <div class="chat-bubble">${htmlContent}</div>
+    <div class="chat-time">${time}</div>
+  `;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+  playChatChime();
+}
+
+function buildHostelPrompt(userQuestion) {
+  const totalCap = state.rooms.reduce((a,r) => a + r.cap, 0);
+  const totalOcc = state.rooms.reduce((a,r) => a + r.occ.length, 0);
+  const freeBeds = totalCap - totalOcc;
+
+  const roomDetails = state.rooms.map(r => {
+    const occNames = r.occ.map(o => typeof o === 'string' ? o : o.name).join(', ') || 'Completely Empty';
+    return `Room ${r.num} (Capacity: ${r.cap}, Occupied: ${r.occ.length}/${r.cap}): Occupants: [${occNames}]`;
+  }).join('; ');
+
+  const pendingLeave = state.leave.filter(l => l.status === 'pending').length;
+  const openComplaints = state.complaints.filter(c => c.status !== 'resolved').length;
+
+  return `You are the 24/7 AI Assistant for 'The Register' Hostel Management System at Tamilnadu College of Engineering.
+LIVE HOSTEL DATABASE SNAPSHOT:
+- Total capacity: ${totalCap} beds, Occupied: ${totalOcc} beds, Vacant beds available: ${freeBeds} beds.
+- Rooms Breakdown: ${roomDetails}.
+- Open maintenance complaints: ${openComplaints}.
+- Pending leave requests: ${pendingLeave}.
+- In-time / Night Curfew: 08:30 PM strictly! Morning gate open: 06:00 AM. Late entry requires warden permission and entry in Section 02 Gate Register. Study hours: 09:30 PM - 06:00 AM.
+- Mess Schedule & Menu:
+  * Breakfast: 07:30 AM – 09:00 AM (Idli, Dosa, Pongal, Vadai, Chutney, Sambar, Tea & Coffee)
+  * Lunch: 12:30 PM – 02:00 PM (South Indian Full Meals, Sambar, Rasam, Curd, Poriyal, Appalam)
+  * Snacks: 05:00 PM – 06:00 PM (Tea/Coffee, Sundal/Bajji/Biscuits)
+  * Dinner: 07:30 PM – 09:00 PM (Chapathi, Veg Kurma, Rice, Dal)
+- Leave Application: Apply in Section 05 at least 24 hours in advance with parent confirmation.
+- Complaints: Lodge in Section 06 (Electrical, Plumbing, Wi-Fi, Carpentry, Cleaning).
+- Emergency Contacts: Chief Warden: +91 94421 00001, Deputy Warden: +91 94421 00002, Security Desk: Ext 101, Clinic: Ext 108.
+- Visitors: 04:30 PM - 06:30 PM in Ground Floor lounge only. Log in Section 07.
+- Technology Architecture: Core Java Backend (HttpServer), SQLite (hostel.db), Queue (FCFS room allocation), HashSet (O(1) ID uniqueness), HashMap (O(1) student lookup).
+
+INSTRUCTIONS:
+1. When asked about rooms, mess, students, timings, complaints, leave, or policies, use this live context.
+2. If asked in Tamil or Tanglish (e.g. 'room irukka?', 'mess timing enna?', 'divya entha room?'), answer warmly in friendly Tamil/Tanglish with exact details!
+3. If asked in English, answer politely in English.
+4. Format with clean bullet points or bold text. Keep answers crisp and helpful.
+5. If the user wants to take action (e.g., apply leave, view rooms, lodge complaint), you can suggest: 'You can go to the respective section in the left menu.'
+
+User Question: ${userQuestion}`;
+}
+
+
+function handleChatSubmit(e) {
+  if(e && e.preventDefault) e.preventDefault();
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if(!text) return;
+  input.value = '';
+
+  appendUserMessage(text);
+
+  const typing = document.getElementById('chatbot-typing');
+  typing.style.display = 'flex';
+  const container = document.getElementById('chatbot-messages');
+  container.scrollTop = container.scrollHeight;
+
+  // Query Gemini AI using API Key with Live Hostel Context, with fallback
+  setTimeout(async () => {
+    let reply = null;
+
+        // 1. Ask the backend (it holds the API key)
+    if (!reply) {
+      try {
+        const res = await api('/chat', 'POST', { message: text });
+        if (res && res.reply && !res.useFallback) {
+          reply = `<div style="line-height:1.5;">${res.reply}</div><div style="font-size:10px; color:var(--ink-soft); margin-top:6px; font-family:'IBM Plex Mono',monospace;">✨ Powered by Google Gemini AI</div>`;
+        }
+      } catch(err) {}
+    }
+
+    // 3. Fallback to instant local intelligence engine
+    if (!reply) {
+      reply = generateBotReply(text);
+    }
+
+    typing.style.display = 'none';
+    appendBotMessage(reply);
+  }, 350);
+}
+
+function generateBotReply(rawQuery) {
+  const q = rawQuery.toLowerCase().trim();
+
+  // 1. GREETINGS
+  if (q.match(/^(hi|hello|hey|vanakkam|vanakam|namaste|good morning|good evening|good afternoon)\b/)) {
+    return `
+      <div><b>Vanakkam! How can I assist you today?</b></div>
+      <div style="margin-top:6px;">You can ask me about live room vacancies, curfew timings, mess schedule, student search, or how to submit leaves and maintenance complaints.</div>
+      <div style="margin-top:8px;">
+        <button class="chat-inline-btn" onclick="handleQuickChip('Vacant Rooms')">🏨 Check Vacancies</button>
+        <button class="chat-inline-btn" onclick="handleQuickChip('Mess & Gate Timings')">⏰ View Timings</button>
+      </div>
+    `;
+  }
+
+  // 2. ROOM VACANCY / AVAILABILITY (LIVE QUERY)
+  if ((q.includes('room') && (q.includes('avail') || q.includes('vacan') || q.includes('empty') || q.includes('irukka') || q.includes('free') || q.includes('bed') || q.includes('capacity') || q.includes('status'))) || q.includes('vacancy') || q.includes('vacancies') || q.includes('room irukka')) {
+    const totalCap = state.rooms.reduce((a,r) => a + r.cap, 0);
+    const totalOcc = state.rooms.reduce((a,r) => a + r.occ.length, 0);
+    const freeBeds = totalCap - totalOcc;
+
+    const vacantRooms = state.rooms.filter(r => r.occ.length < r.cap);
+
+    let listHtml = vacantRooms.map(r => {
+      const freeInRoom = r.cap - r.occ.length;
+      return `<li><b>Room ${esc(r.num)}:</b> ${freeInRoom} bed${freeInRoom > 1 ? 's' : ''} available (${r.occ.length}/${r.cap} occupied)</li>`;
+    }).join('');
+
+    return `
+      <div><span class="chat-highlight">🏨 Live Room Occupancy Data</span></div>
+      <div style="margin-top:6px;">
+        • <b>Total Beds:</b> ${totalCap} beds<br>
+        • <b>Occupied:</b> ${totalOcc} beds<br>
+        • <b>Available Beds:</b> <span style="color:var(--green); font-weight:700;">${freeBeds} vacant bed${freeBeds!==1?'s':''}</span>
+      </div>
+      <div class="chat-card">
+        <strong>Rooms with Vacancies:</strong>
+        ${vacantRooms.length ? `<ul style="margin:4px 0 0 16px; padding:0;">${listHtml}</ul>` : '<div style="color:var(--red);">All rooms are currently full!</div>'}
+      </div>
+      <button class="chat-inline-btn" onclick="switchView('rooms')">👉 Go to Rooms Tab</button>
+    `;
+  }
+
+  // 3. STUDENT SEARCH / ROOM FINDER (LIVE QUERY)
+  const studentKeywords = ['where is', 'which room', 'find', 'room no', 'staying', 'enge irukar', 'enge irukanga', 'entha room', 'student', 'lookup', 'tce'];
+  const hasSearchKeyword = studentKeywords.some(k => q.includes(k));
+  let matchedStudent = null;
+  let matchedRoom = null;
+
+  for (const r of state.rooms) {
+    for (const o of r.occ) {
+      const name = typeof o === 'string' ? o : o.name;
+      const id = typeof o === 'string' ? '' : (o.id || '');
+      const firstName = name.toLowerCase().split(' ')[0];
+      if (q.includes(firstName) || (id && q.includes(id.toLowerCase()))) {
+        matchedStudent = { name, id };
+        matchedRoom = r;
+        break;
+      }
+    }
+    if (matchedStudent) break;
+  }
+
+  if (matchedStudent || hasSearchKeyword) {
+    if (matchedStudent) {
+      // Check roll call status
+      const att = state.attendance.find(a => a.name.toLowerCase() === matchedStudent.name.toLowerCase());
+      const attStatus = att ? att.status.toUpperCase() : 'REGISTERED';
+      const attColor = attStatus === 'PRESENT' ? 'var(--green)' : attStatus === 'ABSENT' ? 'var(--red)' : 'var(--brass-dark)';
+
+      // Roommates
+      const roommates = matchedRoom.occ
+        .map(o => typeof o === 'string' ? o : o.name)
+        .filter(n => n.toLowerCase() !== matchedStudent.name.toLowerCase());
+
+      return `
+        <div><span class="chat-highlight">🔍 Student Located</span></div>
+        <div style="margin-top:6px;">
+          • <b>Student:</b> ${esc(matchedStudent.name)} ${matchedStudent.id ? `(${esc(matchedStudent.id)})` : ''}<br>
+          • <b>Room Number:</b> <b style="font-size:14px; color:var(--cover);">${esc(matchedRoom.num)}</b><br>
+          • <b>Today's Roll Call:</b> <span style="font-weight:700; color:${attColor};">${attStatus}</span><br>
+          • <b>Roommates:</b> ${roommates.length ? esc(roommates.join(', ')) : '<i>Single occupancy</i>'}
+        </div>
+        <button class="chat-inline-btn" onclick="switchView('rooms')">👉 View in Occupancy Grid</button>
+      `;
+    }
+
+    // Check if waiting in queue
+    const queueIdx = state.queue.findIndex(s => q.includes(s.name.toLowerCase().split(' ')[0]) || (s.id && q.includes(s.id.toLowerCase())));
+    if (queueIdx !== -1) {
+      const qStudent = state.queue[queueIdx];
+      return `
+        <div><span class="chat-highlight">⏳ Student in Allocation Queue</span></div>
+        <div style="margin-top:6px;">
+          Student <b>${esc(qStudent.name)}</b> (ID: <code>${esc(qStudent.id)}</code>) is waiting in the <b>FCFS LinkedList Queue</b>.
+          <br>Queue Position: <b>#${queueIdx + 1}</b>.
+        </div>
+        <button class="chat-inline-btn" onclick="switchView('rooms')">👉 View Allocation Queue</button>
+      `;
+    }
+  }
+
+  // 4. MESS / FOOD / CANTEEN TIMINGS
+  if (q.includes('mess') || q.includes('food') || q.includes('breakfast') || q.includes('lunch') || q.includes('dinner') || q.includes('snacks') || q.includes('saapadu') || q.includes('tiffin') || q.includes('eat') || q.includes('canteen')) {
+    return `
+      <div><b>🍽️ Hostel Mess Schedule &amp; Menu:</b></div>
+      <div class="chat-card" style="line-height:1.5;">
+        • <b>Breakfast:</b> 07:30 AM – 09:00 AM<br>
+        <span style="color:var(--ink-soft); font-size:11.5px;">(Idli, Dosa, Pongal, Vadai, Chutney, Sambar, Tea &amp; Coffee)</span><br>
+        • <b>Lunch:</b> 12:30 PM – 02:00 PM<br>
+        <span style="color:var(--ink-soft); font-size:11.5px;">(Full South Indian Meals, Sambar, Rasam, Curd, Kootu, Poriyal, Appalam)</span><br>
+        • <b>Evening Tea &amp; Snacks:</b> 05:00 PM – 06:00 PM<br>
+        <span style="color:var(--ink-soft); font-size:11.5px;">(Sundal, Bajji/Bonda, Biscuits, Hot Tea &amp; Filter Coffee)</span><br>
+        • <b>Dinner:</b> 07:30 PM – 09:00 PM<br>
+        <span style="color:var(--ink-soft); font-size:11.5px;">(Chapathi, Veg Kurma, Jeera Rice, Dal Fry, Milk)</span>
+      </div>
+      <div style="font-size:11.5px; color:var(--ink-soft); margin-top:5px;">
+        📌 <i>Mess reduction / leave must be applied at least 24 hours prior.</i>
+      </div>
+    `;
+  }
+
+  // 5. CURFEW & GATE TIMINGS
+  if (q.includes('gate') || q.includes('curfew') || q.includes('in time') || q.includes('out time') || q.includes('closing') || q.includes('close') || q.includes('night') || q.includes('timing') || q.includes('timings') || q.includes('neram')) {
+    return `
+      <div><b>🚪 Gate &amp; Curfew Timings:</b></div>
+      <div class="chat-card">
+        • <b>Morning Gate Opening:</b> 06:00 AM<br>
+        • <b>Night Curfew (In-time):</b> <span style="color:var(--red); font-weight:700;">08:30 PM Strictly</span><br>
+        • <b>Study Hours (Quiet Time):</b> 09:30 PM – 06:00 AM<br>
+        • <b>Late Entry:</b> Permitted only with prior written approval from the Warden and must be logged in the Gate Register.
+      </div>
+      <div style="font-size:11.5px; color:var(--ink-soft); margin-top:5px;">
+        All student departures and arrivals must be logged in Section 02.
+      </div>
+      <button class="chat-inline-btn" onclick="switchView('register')">👉 Open Gate Register</button>
+    `;
+  }
+
+  // 6. LEAVE APPLICATION GUIDANCE
+  if (q.includes('leave') || q.includes('permission') || q.includes('home visit') || q.includes('night out') || q.includes('holiday') || q.includes('oorukku') || q.includes('apply')) {
+    return `
+      <div><b>📋 How to Apply for Leave:</b></div>
+      <div class="chat-card">
+        1. Open <b>Section 05: Leave Requests</b>.<br>
+        2. Enter your Registered Name, From Date, To Date, and Reason.<br>
+        3. Submit the request at least <b>24 hours in advance</b>.<br>
+        4. The Warden verifies details and approves/rejects your pass.
+      </div>
+      <button class="chat-inline-btn" onclick="switchView('leave')">👉 Open Leave Requests Form</button>
+    `;
+  }
+
+  // 7. COMPLAINTS & MAINTENANCE
+  if (q.includes('complaint') || q.includes('problem') || q.includes('issue') || q.includes('repair') || q.includes('fan') || q.includes('light') || q.includes('plumb') || q.includes('water') || q.includes('leak') || q.includes('praschanai') || q.includes('electric')) {
+    const openComps = state.complaints.filter(c => c.status !== 'resolved').length;
+    return `
+      <div><b>⚠️ Maintenance &amp; Complaints:</b></div>
+      <div style="margin-top:6px;">
+        We attend to issues in <b>Electrical, Plumbing, Wi-Fi, Carpentry, and Cleaning</b>.
+        <br>Currently <b style="color:var(--red);">${openComps}</b> unresolved complaint${openComps!==1?'s':''} in the ledger.
+      </div>
+      <div class="chat-card">
+        <b>To raise an issue:</b> Go to Section 06 Complaints, enter your name, room number, category, and issue details.
+      </div>
+      <button class="chat-inline-btn" onclick="switchView('complaints')">👉 Open Complaints Section</button>
+    `;
+  }
+
+  // 8. EMERGENCY & WARDEN CONTACTS
+  if (q.includes('contact') || q.includes('warden') || q.includes('phone') || q.includes('number') || q.includes('emergency') || q.includes('doctor') || q.includes('clinic') || q.includes('ambulance') || q.includes('security')) {
+    return `
+      <div><b>🚨 24/7 Hostel Emergency Contacts:</b></div>
+      <div class="chat-card" style="line-height:1.6;">
+        • <b>Chief Warden:</b> <a href="tel:+919442100001" style="color:var(--cover); font-weight:700;">+91 94421 00001</a><br>
+        • <b>Deputy Warden:</b> <a href="tel:+919442100002" style="color:var(--cover); font-weight:700;">+91 94421 00002</a><br>
+        • <b>Main Security Desk:</b> Ext 101 / <a href="tel:+919442100009" style="color:var(--cover); font-weight:700;">+91 94421 00009</a><br>
+        • <b>Campus Health Clinic &amp; Ambulance:</b> Ext 108 / <a href="tel:+919442100010" style="color:var(--cover); font-weight:700;">+91 94421 00010</a><br>
+        • <b>Hostel Office:</b> 0422-2622000 (09:00 AM – 05:00 PM)
+      </div>
+    `;
+  }
+
+  // 9. WI-FI & INTERNET
+  if (q.includes('wifi') || q.includes('wi-fi') || q.includes('internet') || q.includes('network') || q.includes('speed') || q.includes('password')) {
+    return `
+      <div><b>📶 Campus High-Speed Wi-Fi:</b></div>
+      <div class="chat-card">
+        • <b>SSID:</b> <code>TCE_Hostel_HighSpeed</code><br>
+        • <b>Authentication:</b> Use your Student Roll No. / ID and College Portal Password.<br>
+        • <b>Speed:</b> 100 Mbps per room.<br>
+        • <b>Support:</b> If facing router/signal issues, file a ticket under Wi-Fi in Section 06.
+      </div>
+      <button class="chat-inline-btn" onclick="switchView('complaints')">👉 Report Wi-Fi Issue</button>
+    `;
+  }
+
+  // 10. VISITOR POLICY
+  if (q.includes('visitor') || q.includes('parent') || q.includes('guest') || q.includes('friends') || q.includes('visit') || q.includes('virundhinar')) {
+    return `
+      <div><b>👥 Visitor Guidelines:</b></div>
+      <div class="chat-card">
+        • <b>Visiting Hours:</b> 04:30 PM – 06:30 PM (Sundays: 10:00 AM – 06:00 PM)<br>
+        • <b>Permitted Visitors:</b> Parents and official guardians only.<br>
+        • <b>Rules:</b> Visitors must log their Gov ID in Section 07 and are strictly restricted to the Ground Floor Visitor Lounge.
+      </div>
+      <button class="chat-inline-btn" onclick="switchView('visitors')">👉 Open Visitor Log</button>
+    `;
+  }
+
+  // 11. DATA STRUCTURES & TECH ARCHITECTURE
+  if (q.includes('data structure') || q.includes('backend') || q.includes('java') || q.includes('hashmap') || q.includes('hashset') || q.includes('queue') || q.includes('sqlite') || q.includes('database')) {
+    return `
+      <div><b>⚙️ Core Java Data Structures &amp; Database:</b></div>
+      <div class="chat-card" style="line-height:1.5;">
+        • <b>Queue (LinkedList):</b> First-Come-First-Served room allocation pipeline.<br>
+        • <b>HashSet:</b> Instant O(1) student ID deduplication &amp; uniqueness checks.<br>
+        • <b>HashMap:</b> O(1) instant student profile, gate history &amp; complaints lookup.<br>
+        • <b>SQLite (hostel.db):</b> Persistent storage with full transaction integrity.
+      </div>
+      <button class="chat-inline-btn" onclick="switchView('dslookup')">🔍 DS &amp; ID Lookup</button>
+      <button class="chat-inline-btn" onclick="switchView('dbviewer')">🗄️ SQLite Viewer</button>
+    `;
+  }
+
+  // 12. ROLE SWITCHER
+  if (q.includes('role') || q.includes('warden mode') || q.includes('admin mode') || q.includes('student mode')) {
+    return `
+      <div><b>👤 Role Access:</b></div>
+      <div style="margin-top:6px;">
+        You can switch your persona using the <b>"Viewing as"</b> pills at the bottom left of the spine menu.
+      </div>
+      <div class="chat-card">
+        • <b>Student:</b> Read access, apply for rooms, lodge complaints &amp; leave.<br>
+        • <b>Warden:</b> Mark attendance, allocate rooms, approve/reject leave.<br>
+        • <b>Admin:</b> Full access, vacate rooms, run deduplication, view raw database.
+      </div>
+    `;
+  }
+
+  // 13. TAMIL / TANGLISH FALLBACK
+  if (q.includes('irukka') || q.includes('enna') || q.includes('eppadi') || q.includes('solunga') || q.includes('venum') || q.includes('epdi')) {
+    return `
+      <div><b>Unga kelvi kidaithathu!</b></div>
+      <div style="margin-top:6px;">
+        Hostel Assistant la neenga:
+        <ul style="margin:4px 0 0 16px; padding:0;">
+          <li><b>Room vacancies</b> paarkalam</li>
+          <li><b>Curfew (8:30 PM)</b> matrum <b>Mess timing</b> therinjukalam</li>
+          <li><b>Leave request</b> apply pandrathu eppadi nu therinjukalam</li>
+          <li><b>Warden contacts</b> edukalam</li>
+        </ul>
+      </div>
+      <div style="margin-top:8px;">
+        <button class="chat-inline-btn" onclick="handleQuickChip('Vacant Rooms')">🏨 Vacancies</button>
+        <button class="chat-inline-btn" onclick="handleQuickChip('Mess & Gate Timings')">⏰ Mess Timing</button>
+        <button class="chat-inline-btn" onclick="handleQuickChip('Warden & Emergency Contacts')">📞 Warden Contact</button>
+      </div>
+    `;
+  }
+
+  // 14. DEFAULT FALLBACK
+  return `
+    <div><b>I'm not quite sure about that specific query.</b></div>
+    <div style="margin-top:6px;">Here are quick things I can help you with immediately:</div>
+    <div class="chat-card">
+      • <b>"Vacant Rooms"</b> — View bed availability &amp; open rooms<br>
+      • <b>"Mess Timings"</b> — Breakfast, lunch, dinner schedule<br>
+      • <b>"Curfew"</b> — Gate in/out rules &amp; night curfew<br>
+      • <b>"Find [Name]"</b> — Locate a student's room &amp; attendance<br>
+      • <b>"Leave rules"</b> — Steps to request an outpass<br>
+      • <b>"Emergency"</b> — Contact numbers for warden &amp; security
+    </div>
+    <div style="margin-top:8px;">
+      <button class="chat-inline-btn" onclick="handleQuickChip('Vacant Rooms')">🏨 Check Rooms</button>
+      <button class="chat-inline-btn" onclick="handleQuickChip('Mess & Gate Timings')">⏰ Timings</button>
+      <button class="chat-inline-btn" onclick="handleQuickChip('Warden & Emergency Contacts')">📞 Contacts</button>
+    </div>
+  `;
+}
+
+// Initialize Chatbot Welcome Message
+injectBotWelcome();
+</script>
+</body>
+</html>

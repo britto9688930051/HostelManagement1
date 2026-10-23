@@ -1,0 +1,21 @@
+{
+  "name": "hostel-management-system",
+  "version": "1.0.0",
+  "description": "Hostel Management System with Chatbot and SQLite Database",
+  "main": "hostel.html",
+  "scripts": {
+    "start": "cmd /c run.bat",
+    "dev": "cmd /c run.bat",
+    "server": "cmd /c run.bat",
+    "view-db": "cmd /c view_db.bat"
+  },
+  "keywords": [
+    "hostel",
+    "management",
+    "sqlite",
+    "java",
+    "chatbot"
+  ],
+  "author": "",
+  "license": "ISC"
+}
